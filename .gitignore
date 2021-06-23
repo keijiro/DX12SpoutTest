@@ -1,0 +1,26 @@
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# Code Editors
+.idea
+.vscode
+*.csproj
+*.sln
+*.swp
+*.vcxproj.user
+
+# Unity
+/Library
+/Logs
+/Recordings
+/UserSettings
+/Temp
+
+# Plugin
+/Plugin/*.o
+/Plugin/*/*.o
+/Plugin/*.dll
