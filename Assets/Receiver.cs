@@ -3,14 +3,12 @@ using UnityEngine.Rendering;
 using System.Runtime.InteropServices;
 using IntPtr = System.IntPtr;
 
-sealed class Test : MonoBehaviour
+sealed class Receiver : MonoBehaviour
 {
     #region Native plugin interface
 
     [DllImport("Plugin")] static extern IntPtr GetRenderEventCallback();
-    [DllImport("Plugin")] static extern IntPtr GetTexturePointer();
-    [DllImport("Plugin")] static extern uint GetTextureWidth();
-    [DllImport("Plugin")] static extern uint GetTextureHeight();
+    [DllImport("Plugin")] static extern IntPtr GetReceiverTexturePointer();
 
     #endregion
 
@@ -38,7 +36,7 @@ sealed class Test : MonoBehaviour
     {
         if (_texture != null) return;
 
-        var ptr = GetTexturePointer();
+        var ptr = GetReceiverTexturePointer();
 
         if (ptr == IntPtr.Zero)
         {
@@ -47,8 +45,7 @@ sealed class Test : MonoBehaviour
         else
         {
             _texture = Texture2D.CreateExternalTexture
-              ((int)GetTextureWidth(), (int)GetTextureHeight(),
-               TextureFormat.RGBA32, false, false, ptr);
+              (640, 360, TextureFormat.RGBA32, false, false, ptr);
             GetComponent<Renderer>().material.mainTexture = _texture;
         }
     }

@@ -13,14 +13,15 @@ namespace {
 IUnityInterfaces* _unity;
 
 // D3D12 objects
-ComPtr<ID3D12Resource> _texture;
-unsigned int _texture_width, _texture_height;
+ComPtr<ID3D12Resource> _recv_texture;
+ComPtr<ID3D12Resource> _send_texture;
 
 // Spout objects
 std::unique_ptr<spoutSenderNames> _name_list;
 
-// Sender name
-const char* _sender_name = "Spout Demo Sender";
+// Predefined names
+const char* _recv_target = "Spout Demo Sender";
+const char* _send_name = "DX12 Test Sender";
 
 //
 // Callback functions
@@ -42,7 +43,8 @@ void UNITY_INTERFACE_API
     {
         // Device shutdown event
         _name_list.reset();
-        _texture = nullptr;
+        _recv_texture = nullptr;
+        _send_texture = nullptr;
     }
 }
 
@@ -50,19 +52,17 @@ void UNITY_INTERFACE_API
 void UNITY_INTERFACE_API OnRenderEvent(int event_id, void* data)
 {
     if (event_id != 0) return;
-    if (_texture) return;
+    if (_recv_texture) return;
 
     auto device = _unity->Get<IUnityGraphicsD3D12v6>()->GetDevice();
 
     HANDLE handle;
     DWORD format;
+    unsigned int w, h;
+    auto res = _name_list->CheckSender(_recv_target, w, h, handle, format);
+    if (!res) return;
 
-    auto res_spout = _name_list->CheckSender
-      (_sender_name, _texture_width, _texture_height, handle, format);
-
-    if (!res_spout) return;
-
-    device->OpenSharedHandle(handle, IID_PPV_ARGS(&_texture));
+    device->OpenSharedHandle(handle, IID_PPV_ARGS(&_recv_texture));
 }
 
 } // anonymous namespace
@@ -102,17 +102,7 @@ extern "C" UnityRenderingEventAndData UNITY_INTERFACE_EXPORT GetRenderEventCallb
     return OnRenderEvent;
 }
 
-extern "C" void UNITY_INTERFACE_EXPORT * GetTexturePointer()
+extern "C" void UNITY_INTERFACE_EXPORT * GetReceiverTexturePointer()
 {
-    return _texture.Get();
-}
-
-extern "C" unsigned int UNITY_INTERFACE_EXPORT GetTextureWidth()
-{
-    return _texture_width;
-}
-
-extern "C" unsigned int UNITY_INTERFACE_EXPORT GetTextureHeight()
-{
-    return _texture_height;
+    return _recv_texture.Get();
 }
