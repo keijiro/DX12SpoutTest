@@ -13,4 +13,7 @@ sealed class Sender : MonoBehaviour
 
     void OnDestroy()
       => Utility.IssuePluginEvent(3);
+
+    void Update()
+      => Utility.IssuePluginEvent(1, _sourceTexture.GetNativeTexturePtr());
 }

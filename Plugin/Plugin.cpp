@@ -54,7 +54,7 @@ void InitializeSender()
 
     if (FAILED(hres))
     {
-        std::puts("D3D11On12CreateDevice failed.");
+        std::printf("D3D11On12CreateDevice failed (%x)\n", hres);
         return;
     }
 
@@ -86,14 +86,7 @@ void InitializeSender()
 
     // Create a Spout sender object for the shared texture.
     auto res = _spout->CreateSender(_send_name, 640, 360, handle, desc.Format);
-
-    if (!res)
-    {
-        std::puts("CreateSender failed");
-        return;
-    }
-
-    std::puts("Sender activated");
+    std::puts(res ? "Sender activated" : "CreateSender failed");
 }
 
 void ReleaseSender()
@@ -120,7 +113,7 @@ void UpdateSender(ID3D12Resource* source)
 
     if (FAILED(res))
     {
-        std::printf("CreateWrappedResource failed (%x)", res);
+        std::printf("CreateWrappedResource failed (%x)\n", res);
         return;
     }
 
@@ -137,26 +130,23 @@ void UpdateSender(ID3D12Resource* source)
 
 void InitializeReceiver()
 {
+    // Search the Spout name list.
     HANDLE handle;
     DWORD format;
     unsigned int w, h;
     auto res = _spout->CheckSender(_recv_target, w, h, handle, format);
     if (!res) return;
 
-    std::printf("Found: %p, %d x %d\n", handle, w, h);
+    std::printf("Sender found: %p, %d x %d\n", handle, w, h);
 
+    // Handle -> D3D12Resource
     auto d3d12 = _unity->Get<IUnityGraphicsD3D12v6>()->GetDevice();
     auto hres = d3d12->OpenSharedHandle(handle, IID_PPV_ARGS(&_recv_texture));
 
     if (FAILED(hres))
-    {
         std::printf("OpenSharedHandle failed (%x)\n", hres);
-    }
     else
-    {
-        auto desc = _recv_texture->GetDesc();
-        std::printf("Receiver created: %d x %d, %d\n", desc.Width, desc.Height, desc.Format);
-    }
+        std::puts("Receiver created");
 }
 
 void ReleaseReceiver()
