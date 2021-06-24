@@ -1,34 +1,17 @@
 using UnityEngine;
-using UnityEngine.Rendering;
 using System.Runtime.InteropServices;
 using IntPtr = System.IntPtr;
 
 sealed class Receiver : MonoBehaviour
 {
-    #region Native plugin interface
-
-    [DllImport("Plugin")] static extern IntPtr GetRenderEventCallback();
     [DllImport("Plugin")] static extern IntPtr GetReceiverTexturePointer();
 
-    #endregion
-
-    #region Private objects
-
-    CommandBuffer _pluginCommand;
     Texture2D _texture;
-
-    #endregion
-
-    #region MonoBehaviour implementation
-
-    void Start()
-    {
-        _pluginCommand = new CommandBuffer();
-        _pluginCommand.IssuePluginEventAndData(GetRenderEventCallback(), 0, IntPtr.Zero);
-    }
 
     void OnDestroy()
     {
+        Utility.IssuePluginEvent(2);
+
         if (_texture != null) Destroy(_texture);
     }
 
@@ -40,7 +23,7 @@ sealed class Receiver : MonoBehaviour
 
         if (ptr == IntPtr.Zero)
         {
-            Graphics.ExecuteCommandBuffer(_pluginCommand);
+            Utility.IssuePluginEvent(0);
         }
         else
         {
@@ -49,6 +32,4 @@ sealed class Receiver : MonoBehaviour
             GetComponent<Renderer>().material.mainTexture = _texture;
         }
     }
-
-    #endregion
 }
