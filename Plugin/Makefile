@@ -13,7 +13,7 @@ SRCS = Plugin.cpp \
 
 OBJS = $(SRCS:.cpp=.o)
 
-LIBS = -Wl,--subsystem,windows -static -ldxgi -ld3d12
+LIBS = -Wl,--subsystem,windows -static -ldxgi -ld3d12 -ld3d11
 
 #
 # Compiler/linker options
@@ -24,7 +24,7 @@ CC = $(TOOLCHAIN)-g++-posix
 STRIP = $(TOOLCHAIN)-strip
 
 CC_FLAGS = -O2
-CC_FLAGS += -I. -std=c++14 -DMINI_SPOUTUTILS
+CC_FLAGS += -I. -std=c++17 -DMINI_SPOUTUTILS
 CC_FLAGS += -Wall -Wno-unknown-pragmas -Wno-conversion-null
 CC_FLAGS += -Wno-format -Wno-unused-function
 
