@@ -2,7 +2,7 @@
 
 #include "Common.h"
 
-namespace Spout {
+namespace KlakSpout {
 
 class Sender final
 {
@@ -106,4 +106,4 @@ private:
     WRL::ComPtr<ID3D11Texture2D> _texture;
 };
 
-} // namespace Spout
+} // namespace KlakSpout

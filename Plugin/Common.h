@@ -8,7 +8,7 @@
 #include "Unity/IUnityGraphics.h"
 #include "Unity/IUnityGraphicsD3D12.h"
 
-namespace Spout {
+namespace KlakSpout {
 
 namespace WRL = Microsoft::WRL;
 
@@ -27,4 +27,4 @@ public:
     inline static std::unique_ptr<SharedObjects> global;
 };
 
-} // namespace Spout
+} // namespace KlakSpout

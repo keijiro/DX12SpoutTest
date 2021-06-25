@@ -2,7 +2,7 @@
 
 #include "Common.h"
 
-namespace Spout {
+namespace KlakSpout {
 
 class Receiver final
 {
@@ -43,4 +43,4 @@ private:
     WRL::ComPtr<ID3D12Resource> _texture;
 };
 
-} // namespace Spout
+} // namespace KlakSpout

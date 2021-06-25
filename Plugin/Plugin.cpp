@@ -2,7 +2,7 @@
 #include "Sender.h"
 #include "Receiver.h"
 
-using namespace Spout;
+using namespace KlakSpout;
 
 namespace {
 
