@@ -12,7 +12,7 @@ namespace KlakSpout {
 
 namespace WRL = Microsoft::WRL;
 
-class SharedObjects final
+class System final
 {
 public:
 
@@ -21,10 +21,9 @@ public:
     WRL::ComPtr<ID3D11Device> d3d11_dev;
     WRL::ComPtr<ID3D11DeviceContext> d3d11_ctx;
 
-    // Spout objects
     std::unique_ptr<spoutSenderNames> spout;
-
-    inline static std::unique_ptr<SharedObjects> global;
 };
+
+inline std::unique_ptr<System> _system;
 
 } // namespace KlakSpout

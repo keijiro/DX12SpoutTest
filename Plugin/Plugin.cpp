@@ -15,23 +15,21 @@ std::unique_ptr<Receiver> _receiver;
 void UNITY_INTERFACE_API
   OnGraphicsDeviceEvent(UnityGfxDeviceEventType event_type)
 {
-    auto& g = *SharedObjects::global;
-
     // We only deal with D3D12.
-    auto renderer_type = g.unity->Get<IUnityGraphics>()->GetRenderer();
+    auto renderer_type = _system->unity->Get<IUnityGraphics>()->GetRenderer();
     if (renderer_type != kUnityGfxRendererD3D12) return;
 
     if (event_type == kUnityGfxDeviceEventInitialize)
     {
         // Device initialization event:
         // Initialize the Spout name table.
-        g.spout = std::make_unique<spoutSenderNames>();
+        _system->spout = std::make_unique<spoutSenderNames>();
     }
     else if (event_type == kUnityGfxDeviceEventShutdown)
     {
         // Device shutdown event:
         // Release the Spout name table.
-        g.spout.reset();
+        _system->spout.reset();
     }
 }
 
@@ -82,13 +80,11 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API
     AllocConsole();
     freopen_s(&pConsole, "CONOUT$", "wb", stdout);
 
-    // Instantiate the global shared object.
-    SharedObjects::global = std::make_unique<SharedObjects>();
-
-    auto& g = *SharedObjects::global;
+    // Instantiate the common system object.
+    _system = std::make_unique<System>();
 
     // Grab the plugin interface pointer.
-    g.unity = interfaces;
+    _system->unity = interfaces;
 
     // Register the graphics device event callback.
     interfaces->Get<IUnityGraphics>()
@@ -100,14 +96,12 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API
 
 extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginUnload()
 {
-    auto& g = *SharedObjects::global;
-
     // Unregister the graphics device event callback.
-    g.unity->Get<IUnityGraphics>()
+    _system->unity->Get<IUnityGraphics>()
       ->UnregisterDeviceEventCallback(OnGraphicsDeviceEvent);
 
-    // Release the global shared object.
-    SharedObjects::global.reset();
+    // Release the common system object.
+    _system.reset();
 }
 
 //

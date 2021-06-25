@@ -10,19 +10,17 @@ public:
 
     Receiver(const char* name)
     {
-        auto& g = *SharedObjects::global;
-
         // Search the Spout name list.
         HANDLE handle;
         DWORD format;
         unsigned int w, h;
-        auto res = g.spout->CheckSender(name, w, h, handle, format);
+        auto res = _system->spout->CheckSender(name, w, h, handle, format);
         if (!res) return;
 
         std::printf("Sender found: %p, %d x %d\n", handle, w, h);
 
         // Handle -> D3D12Resource
-        auto d3d12 = g.unity->Get<IUnityGraphicsD3D12v6>()->GetDevice();
+        auto d3d12 = _system->unity->Get<IUnityGraphicsD3D12v6>()->GetDevice();
         auto hres = d3d12->OpenSharedHandle(handle, IID_PPV_ARGS(&_texture));
 
         if (FAILED(hres))
