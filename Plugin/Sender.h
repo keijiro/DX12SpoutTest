@@ -9,12 +9,35 @@ class Sender final
 public:
 
     Sender(int width, int height, const char* name)
+      : _name(name), _width(width), _height(height) {}
+
+
+    ~Sender()
+    {
+        _texture = nullptr;
+    }
+
+    void update(ID3D12Resource* source)
+    {
+        if (!_texture) initialize();
+        updateTexture(source);
+    }
+
+    void* getTexturePointer() { return _texture.Get(); }
+
+private:
+
+    std::string _name;
+    int _width, _height;
+    WRL::ComPtr<ID3D11Texture2D> _texture;
+
+    void initialize()
     {
         // Make a Spout-compatible texture description.
         D3D11_TEXTURE2D_DESC desc = {};
         desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        desc.Width = width;
-        desc.Height = height;
+        desc.Width = _width;
+        desc.Height = _height;
         desc.MipLevels = 1;
         desc.ArraySize = 1;
         desc.SampleDesc.Count = 1;
@@ -39,17 +62,12 @@ public:
 
         // Create a Spout sender object for the shared texture.
         auto res = _system->spout
-          .CreateSender(name, width, height, handle, desc.Format);
+          .CreateSender(_name.c_str(), _width, _height, handle, desc.Format);
 
         std::puts(res ? "Sender activated" : "CreateSender failed");
     }
 
-    ~Sender()
-    {
-        _texture = nullptr;
-    }
-
-    void update(ID3D12Resource* source)
+    void updateTexture(ID3D12Resource* source)
     {
         auto d3d11on12 = _system->getD3D11On12Device();
 
@@ -75,12 +93,6 @@ public:
         d3d11on12->ReleaseWrappedResources(wrap.GetAddressOf(), 1);
         ctx->Flush();
     }
-
-    void* getTexturePointer() { return _texture.Get(); }
-
-private:
-
-    WRL::ComPtr<ID3D11Texture2D> _texture;
 };
 
 } // namespace KlakSpout

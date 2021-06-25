@@ -32,9 +32,9 @@ void UNITY_INTERFACE_API OnRenderEvent(int event_id, void* data)
     {
         // Event 0: Receiver run
         if (!_receiver)
-        {
             _receiver = std::make_unique<Receiver>("Spout Demo Sender");
-        }
+
+        _receiver->update();
     }
     else if (event_id == 1)
     {
