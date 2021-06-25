@@ -30,12 +30,13 @@ sealed class Receiver : MonoBehaviour
     {
         if (_texture == null)
         {
-            var ptr = Plugin.GetReceiverTexturePointer(_instance);
+            var data = Plugin.GetReceiverData(_instance);
 
-            if (ptr != IntPtr.Zero)
+            if (data.texturePointer != IntPtr.Zero)
             {
                 _texture = Texture2D.CreateExternalTexture
-                  (640, 360, TextureFormat.RGBA32, false, false, ptr);
+                  ((int)data.width, (int)data.height, TextureFormat.RGBA32,
+                   false, false, data.texturePointer);
 
                 GetComponent<Renderer>().material.mainTexture = _texture;
             }

@@ -98,8 +98,8 @@ extern "C" Receiver UNITY_INTERFACE_EXPORT *
     return new Receiver(name);
 }
 
-extern "C" void UNITY_INTERFACE_EXPORT *
-  GetReceiverTexturePointer(Receiver* receiver)
+extern "C" Receiver::InteropData UNITY_INTERFACE_EXPORT
+  GetReceiverData(Receiver* receiver)
 {
-    return receiver ? receiver->getTexturePointer() : nullptr;
+    return receiver->getInteropData();
 }

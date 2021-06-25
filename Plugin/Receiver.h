@@ -8,6 +8,12 @@ class Receiver final
 {
 public:
 
+    struct InteropData
+    {
+        unsigned int width, height;
+        void* texture_pointer;
+    };
+
     Receiver(const char* name)
       : _name(name) {}
 
@@ -23,12 +29,9 @@ public:
         // Search the Spout name list.
         HANDLE handle;
         DWORD format;
-        unsigned int w, h;
         auto res = _system->spout
-          .CheckSender(_name.c_str(), w, h, handle, format);
+          .CheckSender(_name.c_str(), _width, _height, handle, format);
         if (!res) return;
-
-        std::printf("Sender found: %p, %d x %d\n", handle, w, h);
 
         // Handle -> D3D12Resource
         auto hres = _system->getD3D12Device()
@@ -40,11 +43,17 @@ public:
             std::puts("Receiver created");
     }
 
-    void* getTexturePointer() { return _texture.Get(); }
+    InteropData getInteropData() const
+    {
+        return InteropData
+          { .width = _width, .height = _height,
+            .texture_pointer = _texture.Get() };
+    }
 
 private:
 
     std::string _name;
+    unsigned int _width, _height;
     WRL::ComPtr<ID3D12Resource> _texture;
 };
 
