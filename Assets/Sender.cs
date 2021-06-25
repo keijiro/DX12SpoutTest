@@ -1,19 +1,31 @@
 using UnityEngine;
-using System.Runtime.InteropServices;
 using IntPtr = System.IntPtr;
 
 sealed class Sender : MonoBehaviour
 {
-    [SerializeField] Texture _sourceTexture = null;
+    [SerializeField] string _name = "DX12 Test";
+    [SerializeField] Texture _source = null;
 
-    [DllImport("Plugin")] static extern IntPtr GetSenderTexturePointer();
+    IntPtr _instance;
+    EventKicker _event;
 
     void Start()
-      => Utility.IssuePluginEvent(1, _sourceTexture.GetNativeTexturePtr());
+    {
+        _instance = Plugin.CreateSender(_name, _source.width, _source.height);
+
+        _event = new EventKicker()
+          { Data = new EventData(_instance, _source.GetNativeTexturePtr()) };
+
+        _event.IssuePluginEvent(EventID.UpdateSender);
+    }
 
     void OnDestroy()
-      => Utility.IssuePluginEvent(3);
+    {
+        _event.IssuePluginEvent(EventID.CloseSender);
+    }
 
     void Update()
-      => Utility.IssuePluginEvent(1, _sourceTexture.GetNativeTexturePtr());
+    {
+        _event.IssuePluginEvent(EventID.UpdateSender);
+    }
 }

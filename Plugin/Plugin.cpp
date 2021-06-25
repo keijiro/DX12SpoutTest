@@ -1,13 +1,8 @@
-#include "Common.h"
-#include "Sender.h"
-#include "Receiver.h"
+#include "Event.h"
 
 using namespace KlakSpout;
 
 namespace {
-
-std::unique_ptr<Sender> _sender;
-std::unique_ptr<Receiver> _receiver;
 
 //
 // Graphics device event callback
@@ -26,33 +21,25 @@ void UNITY_INTERFACE_API
 //
 // Render event (via IssuePluginEvent) callback
 //
-void UNITY_INTERFACE_API OnRenderEvent(int event_id, void* data)
+void UNITY_INTERFACE_API OnRenderEvent(int event_id, void* event_data)
 {
-    if (event_id == 0)
-    {
-        // Event 0: Receiver run
-        if (!_receiver)
-            _receiver = std::make_unique<Receiver>("Spout Demo Sender");
+    auto data = reinterpret_cast<const EventData*>(event_data);
 
-        _receiver->update();
-    }
-    else if (event_id == 1)
+    if (event_id == event_updateSender)
     {
-        // Event 1: Sender run
-        if (!_sender)
-            _sender = std::make_unique<Sender>(640, 360, "DX12 Test");
-
-        _sender->update(reinterpret_cast<ID3D12Resource*>(data));
+        if (data->receiver) data->sender->update(data->texture);
     }
-    else if (event_id == 2)
+    else if (event_id == event_updateReceiver)
     {
-        // Event 2: Receiver shutdown
-        _receiver.reset();
+        if (data->sender) data->receiver->update();
     }
-    else if (event_id == 3)
+    else if (event_id == event_closeSender)
     {
-        // Event 3: Sender shutdown
-        _sender.reset();
+        if (data->receiver) delete data->sender;
+    }
+    else if (event_id == event_closeReceiver)
+    {
+        if (data->sender) delete data->receiver;
     }
 }
 
@@ -93,17 +80,26 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginUnload()
 // Plugin functions
 //
 
-extern "C" UnityRenderingEventAndData UNITY_INTERFACE_EXPORT GetRenderEventCallback()
+extern "C" UnityRenderingEventAndData UNITY_INTERFACE_EXPORT
+  GetRenderEventCallback()
 {
     return OnRenderEvent;
 }
 
-extern "C" void UNITY_INTERFACE_EXPORT * GetReceiverTexturePointer()
+extern "C" Sender UNITY_INTERFACE_EXPORT *
+  CreateSender(const char* name, int width, int height)
 {
-    return _receiver ? _receiver->getTexturePointer() : nullptr;
+    return new Sender(name, width, height);
 }
 
-extern "C" void UNITY_INTERFACE_EXPORT * GetSenderTexturePointer()
+extern "C" Receiver UNITY_INTERFACE_EXPORT *
+  CreateReceiver(const char* name)
 {
-    return _sender ? _sender->getTexturePointer() : nullptr;
+    return new Receiver(name);
+}
+
+extern "C" void UNITY_INTERFACE_EXPORT *
+  GetReceiverTexturePointer(Receiver* receiver)
+{
+    return receiver ? receiver->getTexturePointer() : nullptr;
 }

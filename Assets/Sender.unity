@@ -226,7 +226,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45225e2abb3d3ef499db078759ef0e7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sourceTexture: {fileID: 8400000, guid: b4932842e5f4d3f4faaddaf7e6402587, type: 2}
+  _name: DX12 Test
+  _source: {fileID: 8400000, guid: b4932842e5f4d3f4faaddaf7e6402587, type: 2}
 --- !u!4 &1047508271
 Transform:
   m_ObjectHideFlags: 0

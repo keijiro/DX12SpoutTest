@@ -8,9 +8,8 @@ class Sender final
 {
 public:
 
-    Sender(int width, int height, const char* name)
+    Sender(const char* name, int width, int height)
       : _name(name), _width(width), _height(height) {}
-
 
     ~Sender()
     {
