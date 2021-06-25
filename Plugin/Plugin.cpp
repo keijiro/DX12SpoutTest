@@ -16,21 +16,11 @@ void UNITY_INTERFACE_API
   OnGraphicsDeviceEvent(UnityGfxDeviceEventType event_type)
 {
     // We only deal with D3D12.
-    auto renderer_type = _system->unity->Get<IUnityGraphics>()->GetRenderer();
-    if (renderer_type != kUnityGfxRendererD3D12) return;
+    if (_system->getGraphics()->GetRenderer() != kUnityGfxRendererD3D12) return;
 
-    if (event_type == kUnityGfxDeviceEventInitialize)
-    {
-        // Device initialization event:
-        // Initialize the Spout name table.
-        _system->spout = std::make_unique<spoutSenderNames>();
-    }
-    else if (event_type == kUnityGfxDeviceEventShutdown)
-    {
-        // Device shutdown event:
-        // Release the Spout name table.
-        _system->spout.reset();
-    }
+    // Device shutdown event
+    if (event_type == kUnityGfxDeviceEventShutdown)
+        _system->releaseD3DObjects();
 }
 
 //
@@ -81,14 +71,10 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API
     freopen_s(&pConsole, "CONOUT$", "wb", stdout);
 
     // Instantiate the common system object.
-    _system = std::make_unique<System>();
-
-    // Grab the plugin interface pointer.
-    _system->unity = interfaces;
+    _system = std::make_unique<System>(interfaces);
 
     // Register the graphics device event callback.
-    interfaces->Get<IUnityGraphics>()
-      ->RegisterDeviceEventCallback(OnGraphicsDeviceEvent);
+    _system->getGraphics()->RegisterDeviceEventCallback(OnGraphicsDeviceEvent);
 
     // We must manually trigger the initialization event.
     OnGraphicsDeviceEvent(kUnityGfxDeviceEventInitialize);
@@ -97,8 +83,7 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API
 extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginUnload()
 {
     // Unregister the graphics device event callback.
-    _system->unity->Get<IUnityGraphics>()
-      ->UnregisterDeviceEventCallback(OnGraphicsDeviceEvent);
+    _system->getGraphics()->UnregisterDeviceEventCallback(OnGraphicsDeviceEvent);
 
     // Release the common system object.
     _system.reset();

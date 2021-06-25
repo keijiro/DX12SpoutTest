@@ -10,23 +10,6 @@ public:
 
     Sender(const char* name)
     {
-        // D3D12 device
-        auto d3d12 = _system->unity->Get<IUnityGraphicsD3D12v6>()->GetDevice();
-
-        // Command queue array
-        IUnknown* queues[] =
-          { _system->unity->Get<IUnityGraphicsD3D12v6>()->GetCommandQueue() };
-
-        // D3D11 on 12 device
-        auto hres = D3D11On12CreateDevice
-          (d3d12, 0, nullptr, 0, queues, 1, 0, &_system->d3d11_dev, &_system->d3d11_ctx, nullptr);
-
-        if (FAILED(hres))
-        {
-            std::printf("D3D11On12CreateDevice failed (%x)\n", hres);
-            return;
-        }
-
         // Make a Spout-compatible texture description.
         D3D11_TEXTURE2D_DESC desc = {};
         desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -39,7 +22,8 @@ public:
         desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED;
 
         // Create a shared texture.
-        hres = _system->d3d11_dev->CreateTexture2D(&desc, nullptr, &_texture);
+        auto hres = _system->getD3D11Device()
+          ->CreateTexture2D(&desc, nullptr, &_texture);
 
         if (FAILED(hres))
         {
@@ -54,22 +38,20 @@ public:
         resource->GetSharedHandle(&handle);
 
         // Create a Spout sender object for the shared texture.
-        auto res = _system->spout->CreateSender(name, 640, 360, handle, desc.Format);
+        auto res = _system->spout
+          .CreateSender(name, 640, 360, handle, desc.Format);
+
         std::puts(res ? "Sender activated" : "CreateSender failed");
     }
 
     ~Sender()
     {
         _texture = nullptr;
-        _system->d3d11_dev = nullptr;
-        _system->d3d11_ctx = nullptr;
     }
 
     void update(ID3D12Resource* source)
     {
-        // ID3D11On12Device retrieval
-        WRL::ComPtr<ID3D11On12Device> d3d11on12;
-        _system->d3d11_dev.As(&d3d11on12);
+        auto d3d11on12 = _system->getD3D11On12Device();
 
         // Wrapping: D3D12 -> D3D11
         D3D11_RESOURCE_FLAGS flags = {};
@@ -87,10 +69,11 @@ public:
         }
 
         // Texture copy
+        auto ctx = _system->getD3D11Context();
         d3d11on12->AcquireWrappedResources(wrap.GetAddressOf(), 1);
-        _system->d3d11_ctx->CopyResource(_texture.Get(), wrap.Get());
+        ctx->CopyResource(_texture.Get(), wrap.Get());
         d3d11on12->ReleaseWrappedResources(wrap.GetAddressOf(), 1);
-        _system->d3d11_ctx->Flush();
+        ctx->Flush();
     }
 
     void* getTexturePointer() { return _texture.Get(); }

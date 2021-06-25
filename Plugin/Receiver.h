@@ -14,14 +14,14 @@ public:
         HANDLE handle;
         DWORD format;
         unsigned int w, h;
-        auto res = _system->spout->CheckSender(name, w, h, handle, format);
+        auto res = _system->spout.CheckSender(name, w, h, handle, format);
         if (!res) return;
 
         std::printf("Sender found: %p, %d x %d\n", handle, w, h);
 
         // Handle -> D3D12Resource
-        auto d3d12 = _system->unity->Get<IUnityGraphicsD3D12v6>()->GetDevice();
-        auto hres = d3d12->OpenSharedHandle(handle, IID_PPV_ARGS(&_texture));
+        auto hres = _system->getD3D12Device()
+          ->OpenSharedHandle(handle, IID_PPV_ARGS(&_texture));
 
         if (FAILED(hres))
             std::printf("OpenSharedHandle failed (%x)\n", hres);
