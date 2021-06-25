@@ -8,11 +8,16 @@ sealed class Receiver : MonoBehaviour
 
     Texture2D _texture;
 
+    void Start()
+      => Utility.IssuePluginEvent(0);
+
     void OnDestroy()
     {
-        Utility.IssuePluginEvent(2);
-
-        if (_texture != null) Destroy(_texture);
+        if (_texture != null)
+        {
+            Utility.IssuePluginEvent(2);
+            Destroy(_texture);
+        }
     }
 
     void Update()
@@ -20,16 +25,11 @@ sealed class Receiver : MonoBehaviour
         if (_texture != null) return;
 
         var ptr = GetReceiverTexturePointer();
+        if (ptr == IntPtr.Zero) return;
 
-        if (ptr == IntPtr.Zero)
-        {
-            Utility.IssuePluginEvent(0);
-        }
-        else
-        {
-            _texture = Texture2D.CreateExternalTexture
-              (640, 360, TextureFormat.RGBA32, false, false, ptr);
-            GetComponent<Renderer>().material.mainTexture = _texture;
-        }
+        _texture = Texture2D.CreateExternalTexture
+          (640, 360, TextureFormat.RGBA32, false, false, ptr);
+
+        GetComponent<Renderer>().material.mainTexture = _texture;
     }
 }
