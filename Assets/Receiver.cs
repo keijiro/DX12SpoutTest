@@ -13,7 +13,7 @@ sealed class Receiver : MonoBehaviour
 
     void Start()
     {
-        _instance = Plugin.CreateReceiver(_targetName);
+        _instance = Plugin.CreateReceiverD3D12(_targetName);
         _event = new EventKicker() { Data = new EventData(_instance) };
 
         _event.IssuePluginEvent(EventID.UpdateReceiver);

@@ -10,9 +10,6 @@ namespace {
 void UNITY_INTERFACE_API
   OnGraphicsDeviceEvent(UnityGfxDeviceEventType event_type)
 {
-    // We only deal with D3D12.
-    if (_system->getGraphics()->GetRenderer() != kUnityGfxRendererD3D12) return;
-
     // Device shutdown event
     if (event_type == kUnityGfxDeviceEventShutdown)
         _system->releaseD3DObjects();
@@ -87,13 +84,13 @@ extern "C" UnityRenderingEventAndData UNITY_INTERFACE_EXPORT
 }
 
 extern "C" Sender UNITY_INTERFACE_EXPORT *
-  CreateSender(const char* name, int width, int height)
+  CreateSenderD3D12(const char* name, int width, int height)
 {
     return new Sender(name, width, height);
 }
 
 extern "C" Receiver UNITY_INTERFACE_EXPORT *
-  CreateReceiver(const char* name)
+  CreateReceiverD3D12(const char* name)
 {
     return new Receiver(name);
 }
