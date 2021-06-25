@@ -8,13 +8,13 @@ class Sender final
 {
 public:
 
-    Sender(const char* name)
+    Sender(int width, int height, const char* name)
     {
         // Make a Spout-compatible texture description.
         D3D11_TEXTURE2D_DESC desc = {};
         desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        desc.Width = 640;
-        desc.Height = 360;
+        desc.Width = width;
+        desc.Height = height;
         desc.MipLevels = 1;
         desc.ArraySize = 1;
         desc.SampleDesc.Count = 1;
@@ -39,7 +39,7 @@ public:
 
         // Create a Spout sender object for the shared texture.
         auto res = _system->spout
-          .CreateSender(name, 640, 360, handle, desc.Format);
+          .CreateSender(name, width, height, handle, desc.Format);
 
         std::puts(res ? "Sender activated" : "CreateSender failed");
     }

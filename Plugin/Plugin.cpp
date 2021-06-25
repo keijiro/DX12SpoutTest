@@ -40,7 +40,7 @@ void UNITY_INTERFACE_API OnRenderEvent(int event_id, void* data)
     {
         // Event 1: Sender run
         if (!_sender)
-            _sender = std::make_unique<Sender>("DX12 Test");
+            _sender = std::make_unique<Sender>(640, 360, "DX12 Test");
 
         _sender->update(reinterpret_cast<ID3D12Resource*>(data));
     }
