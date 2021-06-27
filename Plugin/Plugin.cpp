@@ -1,4 +1,8 @@
+#include "Common.h"
 #include "Event.h"
+#include "Receiver.h"
+#include "Sender.h"
+#include "System.h"
 
 using namespace KlakSpout;
 

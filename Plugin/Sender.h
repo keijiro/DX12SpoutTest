@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common.h"
+#include "System.h"
 
 namespace KlakSpout {
 
