@@ -32,23 +32,11 @@ struct EventData
 
 class EventKicker : IDisposable
 {
-    public EventKicker()
-      => _dataMem = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(EventData)));
-
-    public EventData Data
-    {
-        get => Marshal.PtrToStructure<EventData>(_dataMem);
-        set => Marshal.StructureToPtr(value, _dataMem, false);
-    }
+    public EventKicker(EventData data)
+      => _dataMem = GCHandle.Alloc(data, GCHandleType.Pinned);
 
     public void Dispose()
-    {
-        if (_dataMem != IntPtr.Zero)
-        {
-            Marshal.FreeHGlobal(_dataMem);
-            _dataMem = IntPtr.Zero;
-        }
-    }
+      => _dataMem.Free();
 
     public void IssuePluginEvent(EventID eventID)
     {
@@ -58,12 +46,12 @@ class EventKicker : IDisposable
             _cmdBuffer.Clear();
 
         _cmdBuffer.IssuePluginEventAndData
-          (Plugin.GetRenderEventCallback(), (int)eventID, _dataMem);
+          (Plugin.GetRenderEventCallback(),
+           (int)eventID, _dataMem.AddrOfPinnedObject());
 
         Graphics.ExecuteCommandBuffer(_cmdBuffer);
     }
 
     static CommandBuffer _cmdBuffer;
-
-    IntPtr _dataMem;
+    GCHandle _dataMem;
 }

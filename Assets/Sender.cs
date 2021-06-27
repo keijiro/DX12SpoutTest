@@ -14,8 +14,8 @@ sealed class Sender : MonoBehaviour
         _instance = Plugin.CreateSenderD3D12
           (_name, _source.width, _source.height);
 
-        _event = new EventKicker()
-          { Data = new EventData(_instance, _source.GetNativeTexturePtr()) };
+        _event = new EventKicker
+          (new EventData(_instance, _source.GetNativeTexturePtr()));
 
         _event.IssuePluginEvent(EventID.UpdateSender);
     }
@@ -23,6 +23,7 @@ sealed class Sender : MonoBehaviour
     void OnDestroy()
     {
         _event.IssuePluginEvent(EventID.CloseSender);
+        _event.Dispose();
     }
 
     void Update()
