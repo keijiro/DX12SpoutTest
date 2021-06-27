@@ -17,7 +17,7 @@ struct EventData
     union { Sender* sender;
             Receiver* receiver; };
 
-    ID3D12Resource* texture;
+    IUnknown* texture;
 };
 
 } // namespace KlakSpout

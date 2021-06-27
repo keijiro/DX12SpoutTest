@@ -16,13 +16,25 @@ public:
         _texture = nullptr;
     }
 
-    void update(ID3D12Resource* source)
+    void update(IUnknown* source)
     {
         if (!_texture) initialize();
-        updateTexture(source);
-    }
 
-    void* getTexturePointer() { return _texture.Get(); }
+        WRL::ComPtr<IUnknown> unknown(source);
+
+        if (_system->isD3D12)
+        {
+            WRL::ComPtr<ID3D12Resource> d3d12;
+            unknown.As(&d3d12);
+            updateTexture(d3d12.Get());
+        }
+        else
+        {
+            WRL::ComPtr<ID3D11Resource> d3d11;
+            unknown.As(&d3d11);
+            updateTexture(d3d11.Get());
+        }
+    }
 
 private:
 
@@ -64,6 +76,12 @@ private:
           .CreateSender(_name.c_str(), _width, _height, handle, desc.Format);
 
         std::puts(res ? "Sender activated" : "CreateSender failed");
+    }
+
+    void updateTexture(ID3D11Resource* source)
+    {
+        // Texture copy
+        _system->getD3D11Context()->CopyResource(_texture.Get(), source);
     }
 
     void updateTexture(ID3D12Resource* source)

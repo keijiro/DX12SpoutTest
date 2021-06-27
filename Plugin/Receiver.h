@@ -33,14 +33,37 @@ public:
           .CheckSender(_name.c_str(), _width, _height, handle, format);
         if (!res) return;
 
-        // Handle -> D3D12Resource
-        auto hres = _system->getD3D12Device()
-          ->OpenSharedHandle(handle, IID_PPV_ARGS(&_texture));
+        if (_system->isD3D12)
+        {
+            // Handle -> D3D12Resource
+            WRL::ComPtr<ID3D12Resource> resource;
 
-        if (FAILED(hres))
-            std::printf("OpenSharedHandle failed (%x)\n", hres);
+            auto hres = _system->getD3D12Device()
+              ->OpenSharedHandle(handle, IID_PPV_ARGS(&resource));
+
+            _texture = resource;
+
+            if (FAILED(hres))
+                std::printf("OpenSharedHandle failed (%x)\n", hres);
+            else
+                std::puts("Receiver created");
+        }
         else
-            std::puts("Receiver created");
+        {
+            // Handle -> D3D11Resource
+            WRL::ComPtr<ID3D11Resource> resource;
+
+            auto hres = _system->getD3D11Device()
+              ->OpenSharedResource(handle, IID_PPV_ARGS(&resource));
+
+            _texture = resource;
+
+            if (FAILED(hres))
+                std::printf("OpenSharedHandle failed (%x)\n", hres);
+            else
+                std::puts("Receiver created");
+        }
+
     }
 
     InteropData getInteropData() const
@@ -54,7 +77,7 @@ private:
 
     std::string _name;
     unsigned int _width, _height;
-    WRL::ComPtr<ID3D12Resource> _texture;
+    WRL::ComPtr<IUnknown> _texture;
 };
 
 } // namespace KlakSpout

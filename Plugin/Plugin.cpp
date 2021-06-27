@@ -10,34 +10,20 @@ namespace {
 void UNITY_INTERFACE_API
   OnGraphicsDeviceEvent(UnityGfxDeviceEventType event_type)
 {
-    // Device shutdown event
-    if (event_type == kUnityGfxDeviceEventShutdown)
-        _system->releaseD3DObjects();
+    if (event_type == kUnityGfxDeviceEventShutdown) _system->shutdown();
 }
 
 //
 // Render event (via IssuePluginEvent) callback
 //
-void UNITY_INTERFACE_API OnRenderEvent(int event_id, void* event_data)
+void UNITY_INTERFACE_API
+  OnRenderEvent(int event_id, void* event_data)
 {
     auto data = reinterpret_cast<const EventData*>(event_data);
-
-    if (event_id == event_updateSender)
-    {
-        if (data->receiver) data->sender->update(data->texture);
-    }
-    else if (event_id == event_updateReceiver)
-    {
-        if (data->sender) data->receiver->update();
-    }
-    else if (event_id == event_closeSender)
-    {
-        if (data->receiver) delete data->sender;
-    }
-    else if (event_id == event_closeReceiver)
-    {
-        if (data->sender) delete data->receiver;
-    }
+    if (event_id == event_updateSender  ) data->sender->update(data->texture);
+    if (event_id == event_updateReceiver) data->receiver->update();
+    if (event_id == event_closeSender  ) delete data->sender;
+    if (event_id == event_closeReceiver) delete data->receiver;
 }
 
 } // anonymous namespace
@@ -54,22 +40,15 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API
     AllocConsole();
     freopen_s(&pConsole, "CONOUT$", "wb", stdout);
 
-    // Instantiate the common system object.
+    // System object instantiation, callback registration
     _system = std::make_unique<System>(interfaces);
-
-    // Register the graphics device event callback.
     _system->getGraphics()->RegisterDeviceEventCallback(OnGraphicsDeviceEvent);
-
-    // We must manually trigger the initialization event.
-    OnGraphicsDeviceEvent(kUnityGfxDeviceEventInitialize);
 }
 
 extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginUnload()
 {
-    // Unregister the graphics device event callback.
+    // System object destruction
     _system->getGraphics()->UnregisterDeviceEventCallback(OnGraphicsDeviceEvent);
-
-    // Release the common system object.
     _system.reset();
 }
 

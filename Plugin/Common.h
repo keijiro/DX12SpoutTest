@@ -6,6 +6,7 @@
 #include <wrl/client.h> // for ComPtr
 #include "Spout/SpoutSenderNames.h"
 #include "Unity/IUnityGraphics.h"
+#include "Unity/IUnityGraphicsD3D11.h"
 #include "Unity/IUnityGraphicsD3D12.h"
 
 namespace KlakSpout {
@@ -16,10 +17,16 @@ class System final
 {
 public:
 
-    spoutSenderNames spout;
-
     System(IUnityInterfaces* unity)
-      : _unity(unity) {}
+      : _unity(unity),
+        isD3D12(getGraphics()->GetRenderer() == kUnityGfxRendererD3D12) {}
+
+    void shutdown()
+    {
+        _d3d11on12 = nullptr;
+        _d3d11_device = nullptr;
+        _d3d11_context = nullptr;
+    }
 
     IUnityGraphics* getGraphics() const
     {
@@ -41,26 +48,43 @@ public:
 
     WRL::ComPtr<ID3D11Device> getD3D11Device()
     {
-        if (!_d3d11_device) PrepareD3D11On12();
-        return _d3d11_device;
+        if (isD3D12)
+        {
+            if (!_d3d11_device) PrepareD3D11On12();
+            return _d3d11_device;
+        }
+        else
+        {
+            return _unity->Get<IUnityGraphicsD3D11>()->GetDevice();
+        }
     }
 
     WRL::ComPtr<ID3D11DeviceContext> getD3D11Context()
     {
-        if (!_d3d11_context) PrepareD3D11On12();
-        return _d3d11_context;
-    }
-
-    void releaseD3DObjects()
-    {
-        _d3d11on12 = nullptr;
-        _d3d11_device = nullptr;
-        _d3d11_context = nullptr;
+        if (isD3D12)
+        {
+            if (!_d3d11_context) PrepareD3D11On12();
+            return _d3d11_context;
+        }
+        else
+        {
+            WRL::ComPtr<ID3D11DeviceContext> ctx;
+            _unity->Get<IUnityGraphicsD3D11>()
+              ->GetDevice()->GetImmediateContext(&ctx);
+            return ctx;
+        }
     }
 
 private:
 
     IUnityInterfaces* _unity;
+
+public:
+
+    spoutSenderNames spout;
+    const bool isD3D12;
+
+public:
 
     WRL::ComPtr<ID3D11On12Device> _d3d11on12;
     WRL::ComPtr<ID3D11Device> _d3d11_device;
@@ -73,12 +97,9 @@ private:
           = { _unity->Get<IUnityGraphicsD3D12v6>()->GetCommandQueue() };
 
         // Create a D3D11-on-12 device.
-        auto hres = D3D11On12CreateDevice
+        D3D11On12CreateDevice
           (getD3D12Device().Get(), 0, nullptr, 0,
            queues, 1, 0, &_d3d11_device, &_d3d11_context, nullptr);
-
-        if (FAILED(hres))
-            std::printf("D3D11On12CreateDevice failed (%x)\n", hres);
     }
 };
 
