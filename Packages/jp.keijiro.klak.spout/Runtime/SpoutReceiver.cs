@@ -8,7 +8,7 @@ namespace Klak.Spout {
 [AddComponentMenu("Klak/Spout/Spout Receiver")]
 public sealed class SpoutReceiver : MonoBehaviour
 {
-    [SerializeField] string _targetName = "Spout Demo Sender";
+    [SerializeField] string _sourceName = "Spout Demo Sender";
 
     IntPtr _instance;
     EventKicker _event;
@@ -17,7 +17,7 @@ public sealed class SpoutReceiver : MonoBehaviour
 
     void Start()
     {
-        _instance = Plugin.CreateReceiverD3D12(_targetName);
+        _instance = Plugin.CreateReceiverD3D12(_sourceName);
         _event = new EventKicker(new EventData(_instance));
 
         _event.IssuePluginEvent(EventID.UpdateReceiver);

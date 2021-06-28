@@ -228,7 +228,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62f7dec0b00674947bc631624c21970a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _targetName: Spout Demo Sender
+  _sourceName: Spout Demo Sender
 --- !u!4 &1047508271
 Transform:
   m_ObjectHideFlags: 0
