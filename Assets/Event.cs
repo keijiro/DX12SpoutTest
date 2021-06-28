@@ -36,7 +36,7 @@ class EventKicker : IDisposable
       => _dataMem = GCHandle.Alloc(data, GCHandleType.Pinned);
 
     public void Dispose()
-      => _dataMem.Free();
+      => MemoryPool.FreeOnEndOfFrame(_dataMem);
 
     public void IssuePluginEvent(EventID eventID)
     {

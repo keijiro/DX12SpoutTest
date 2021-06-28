@@ -40,9 +40,9 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API
   UnityPluginLoad(IUnityInterfaces* interfaces)
 {
     // Open a new console for stdout.
-    FILE * pConsole;
-    AllocConsole();
-    freopen_s(&pConsole, "CONOUT$", "wb", stdout);
+    //FILE * pConsole;
+    //AllocConsole();
+    //freopen_s(&pConsole, "CONOUT$", "wb", stdout);
 
     // System object instantiation, callback registration
     _system = std::make_unique<System>(interfaces);
