@@ -13,7 +13,7 @@ SRCS = Plugin.cpp \
 
 OBJS = $(SRCS:.cpp=.o)
 
-LIBS = -Wl,--subsystem,windows -static -ldxgi -ld3d12 -ld3d11
+LIBS = -Wl,--subsystem,windows -static -ldxgi -ld3d12 -ld3d11 -lole32
 
 #
 # Compiler/linker options

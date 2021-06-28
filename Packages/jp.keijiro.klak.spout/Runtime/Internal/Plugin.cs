@@ -23,6 +23,11 @@ static class Plugin
 
     [DllImport("KlakSpout")]
     public static extern ReceiverData GetReceiverData(IntPtr receiver);
+
+    [DllImport("KlakSpout")]
+    public static extern void GetSenderNames
+      ([Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]
+       out IntPtr[] names, out int count);
 }
 
 } // namespace Klak.Spout

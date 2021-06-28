@@ -3,6 +3,7 @@
 #include "Receiver.h"
 #include "Sender.h"
 #include "System.h"
+#include "Util.h"
 
 using namespace KlakSpout;
 
@@ -82,4 +83,12 @@ extern "C" Receiver::InteropData UNITY_INTERFACE_EXPORT
   GetReceiverData(Receiver* receiver)
 {
     return receiver->getInteropData();
+}
+
+extern "C" void UNITY_INTERFACE_EXPORT
+  GetSenderNames(char*** names, int* count)
+{
+    std::set<std::string> senders;
+    _system->spout.GetSenderNames(&senders);
+    std::tie(*names, *count) = MarshalStringSet(senders);
 }
