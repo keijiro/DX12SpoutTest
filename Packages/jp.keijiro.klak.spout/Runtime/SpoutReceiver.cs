@@ -2,7 +2,11 @@ using UnityEngine;
 using System.Runtime.InteropServices;
 using IntPtr = System.IntPtr;
 
-sealed class Receiver : MonoBehaviour
+namespace Klak.Spout {
+
+//[ExecuteInEditMode]
+[AddComponentMenu("Klak/Spout/Spout Receiver")]
+public sealed class SpoutReceiver : MonoBehaviour
 {
     [SerializeField] string _targetName = "Spout Demo Sender";
 
@@ -46,3 +50,5 @@ sealed class Receiver : MonoBehaviour
         _event.IssuePluginEvent(EventID.UpdateReceiver);
     }
 }
+
+} // namespace Klak.Spout

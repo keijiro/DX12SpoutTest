@@ -2,9 +2,9 @@
 # File listings
 #
 
-TARGET = Plugin.dll
+TARGET = KlakSpout.dll
 
-DEST = ../Assets/
+DEST = ../Packages/jp.keijiro.klak.spout/Plugin/
 
 SRCS = Plugin.cpp \
        Spout/SpoutSenderNames.cpp \

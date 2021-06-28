@@ -1,7 +1,11 @@
 using UnityEngine;
 using IntPtr = System.IntPtr;
 
-sealed class Sender : MonoBehaviour
+namespace Klak.Spout {
+
+//[ExecuteInEditMode]
+[AddComponentMenu("Klak/Spout/Spout Sender")]
+public sealed class SpoutSender : MonoBehaviour
 {
     [SerializeField] string _name = "DX12 Test";
     [SerializeField] Texture _source = null;
@@ -31,3 +35,5 @@ sealed class Sender : MonoBehaviour
         _event.IssuePluginEvent(EventID.UpdateSender);
     }
 }
+
+} // namespace Klak.Spout

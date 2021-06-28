@@ -3,6 +3,8 @@ using UnityEngine.Rendering;
 using System.Runtime.InteropServices;
 using System;
 
+namespace Klak.Spout {
+
 enum EventID
 {
     UpdateSender,
@@ -55,3 +57,5 @@ class EventKicker : IDisposable
     static CommandBuffer _cmdBuffer;
     GCHandle _dataMem;
 }
+
+} // namespace Klak.Spout

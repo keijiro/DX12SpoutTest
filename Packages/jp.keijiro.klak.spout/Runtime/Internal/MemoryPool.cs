@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
+namespace Klak.Spout {
+
 //
 // "Memory pool" class without actual memory pool functionality
 // At the moment, it only provides the delayed destruction method.
@@ -64,3 +66,5 @@ static class MemoryPool
 
     #endregion
 }
+
+} // namespace Klak.Spout
