@@ -16,10 +16,10 @@ static class Plugin
     public static extern IntPtr GetRenderEventCallback();
 
     [DllImport("KlakSpout")]
-    public static extern IntPtr CreateSenderD3D12(string name, int width, int height);
+    public static extern IntPtr CreateSender(string name, int width, int height);
 
     [DllImport("KlakSpout")]
-    public static extern IntPtr CreateReceiverD3D12(string name);
+    public static extern IntPtr CreateReceiver(string name);
 
     [DllImport("KlakSpout")]
     public static extern ReceiverData GetReceiverData(IntPtr receiver);

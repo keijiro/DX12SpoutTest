@@ -15,8 +15,7 @@ public sealed class SpoutSender : MonoBehaviour
 
     void Start()
     {
-        _instance = Plugin.CreateSenderD3D12
-          (_name, _source.width, _source.height);
+        _instance = Plugin.CreateSender(_name, _source.width, _source.height);
 
         _event = new EventKicker
           (new EventData(_instance, _source.GetNativeTexturePtr()));

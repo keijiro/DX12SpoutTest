@@ -1,54 +1,94 @@
 using UnityEngine;
-using System.Runtime.InteropServices;
-using IntPtr = System.IntPtr;
 
 namespace Klak.Spout {
 
-//[ExecuteInEditMode]
+[ExecuteInEditMode]
 [AddComponentMenu("Klak/Spout/Spout Receiver")]
-public sealed class SpoutReceiver : MonoBehaviour
+public sealed partial class SpoutReceiver : MonoBehaviour
 {
-    [SerializeField] string _sourceName = "Spout Demo Sender";
+    #region Private objects
 
-    IntPtr _instance;
-    EventKicker _event;
+    Receiver _receiver;
 
-    Texture2D _texture;
+    #endregion
 
-    void Start()
+    #region Buffer texture object
+
+    RenderTexture Buffer => PrepareBufferTexture();
+
+    RenderTexture _buffer;
+
+    RenderTexture PrepareBufferTexture()
     {
-        _instance = Plugin.CreateReceiverD3D12(_sourceName);
-        _event = new EventKicker(new EventData(_instance));
+        var src = _receiver.Texture;
+        if (src == null) return null;
 
-        _event.IssuePluginEvent(EventID.UpdateReceiver);
+        if (_buffer != null && !Utility.CompareSpecs(_buffer, src))
+        {
+            Utility.Destroy(_buffer);
+            _buffer = null;
+        }
+
+        if (_buffer == null)
+        {
+            _buffer = new RenderTexture(src.width, src.height, 0);
+            _buffer.hideFlags = HideFlags.DontSave;
+        }
+
+        return _buffer;
+    }
+
+    #endregion
+
+    #region Private method
+
+    void ChangeSourceName(string name)
+    {
+        // Receiver refresh on source changes
+        if (_sourceName == name) return;
+        _sourceName = name;
+        _receiver?.Dispose();
+        _receiver = null;
+    }
+
+    #endregion
+
+    #region MonoBehaviour implementation
+
+    void OnDisable()
+    {
+        _receiver?.Dispose();
+        _receiver = null;
     }
 
     void OnDestroy()
     {
-        _event.IssuePluginEvent(EventID.CloseReceiver);
-        _event.Dispose();
-
-        if (_texture != null) Destroy(_texture);
+        Utility.Destroy(_buffer);
+        _buffer = null;
     }
 
     void Update()
     {
-        if (_texture == null)
-        {
-            var data = Plugin.GetReceiverData(_instance);
+        // Receiver lazy initialization
+        if (_receiver == null)
+            _receiver = new Receiver(_sourceName);
 
-            if (data.texturePointer != IntPtr.Zero)
-            {
-                _texture = Texture2D.CreateExternalTexture
-                  ((int)data.width, (int)data.height, TextureFormat.RGBA32,
-                   false, false, data.texturePointer);
+        // Receiver plugin-side update
+        _receiver.Update();
 
-                GetComponent<Renderer>().material.mainTexture = _texture;
-            }
-        }
+        // Do nothing further if no texture is ready yet.
+        if (_receiver.Texture == null) return;
 
-        _event.IssuePluginEvent(EventID.UpdateReceiver);
+        // Received texture buffering
+        Blitter.Blit(_receiver.Texture, receivedTexture);
+
+        // Renderer override
+        if (_targetRenderer != null)
+            RendererOverride.SetTexture
+              (_targetRenderer, _targetMaterialProperty, receivedTexture);
     }
+
+    #endregion
 }
 
 } // namespace Klak.Spout

@@ -68,13 +68,13 @@ extern "C" UnityRenderingEventAndData UNITY_INTERFACE_EXPORT
 }
 
 extern "C" Sender UNITY_INTERFACE_EXPORT *
-  CreateSenderD3D12(const char* name, int width, int height)
+  CreateSender(const char* name, int width, int height)
 {
     return new Sender(name, width, height);
 }
 
 extern "C" Receiver UNITY_INTERFACE_EXPORT *
-  CreateReceiverD3D12(const char* name)
+  CreateReceiver(const char* name)
 {
     return new Receiver(name);
 }
