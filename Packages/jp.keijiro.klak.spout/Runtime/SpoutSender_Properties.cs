@@ -14,6 +14,14 @@ partial class SpoutSender
       { get => _spoutName;
         set => ChangeSpoutName(value); }
 
+    void ChangeSpoutName(string name)
+    {
+        // Sender refresh on renaming
+        if (_spoutName == name) return;
+        _spoutName = name;
+        ReleaseSender();
+    }
+
     #endregion
 
     #region Format option
@@ -32,13 +40,13 @@ partial class SpoutSender
 
     public CaptureMethod captureMethod
       { get => _captureMethod;
-        set => ChangeCaptureMethod(value); }
+        set => _captureMethod = value; }
 
     [SerializeField] Camera _sourceCamera = null;
 
     public Camera sourceCamera
       { get => _sourceCamera;
-        set => ChangeSourceCamera(value); }
+        set => _sourceCamera = value; }
 
     [SerializeField] Texture _sourceTexture = null;
 
@@ -47,10 +55,6 @@ partial class SpoutSender
         set => _sourceTexture = value; }
 
     #endregion
-
-    void ChangeSpoutName(string name) {}
-    void ChangeCaptureMethod(CaptureMethod method) {}
-    void ChangeSourceCamera(Camera camera) {}
 }
 
 } // namespace Klak.Spout

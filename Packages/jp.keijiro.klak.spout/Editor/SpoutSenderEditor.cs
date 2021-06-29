@@ -18,6 +18,19 @@ sealed class SpoutSenderEditor : UnityEditor.Editor
         public static Label SpoutName = "Spout Name";
     }
 
+    // Sender restart request
+    void RequestRestart()
+    {
+        // Dirty trick: We only can restart senders by modifying the
+        // spoutName property, so we modify it by an invalid name, then
+        // revert it.
+        foreach (SpoutSender send in targets)
+        {
+            send.spoutName = "";
+            send.spoutName = _spoutName.stringValue;
+        }
+    }
+
     void OnEnable()
     {
         var finder = new PropertyFinder(serializedObject);
@@ -34,23 +47,16 @@ sealed class SpoutSenderEditor : UnityEditor.Editor
 
         EditorGUI.BeginChangeCheck();
         EditorGUILayout.DelayedTextField(_spoutName, Labels.SpoutName);
-        var modName = EditorGUI.EndChangeCheck();
+        var restart = EditorGUI.EndChangeCheck();
 
         EditorGUILayout.PropertyField(_enableAlpha);
-
-        EditorGUI.BeginChangeCheck();
         EditorGUILayout.PropertyField(_captureMethod);
-        var modMethod = EditorGUI.EndChangeCheck();
 
         EditorGUI.indentLevel++;
 
         if (_captureMethod.hasMultipleDifferentValues ||
             _captureMethod.enumValueIndex == (int)CaptureMethod.Camera)
-        {
-            EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(_sourceCamera);
-            modMethod |= EditorGUI.EndChangeCheck();
-        }
 
         if (_captureMethod.hasMultipleDifferentValues ||
             _captureMethod.enumValueIndex == (int)CaptureMethod.Texture)
@@ -59,6 +65,8 @@ sealed class SpoutSenderEditor : UnityEditor.Editor
         EditorGUI.indentLevel--;
 
         serializedObject.ApplyModifiedProperties();
+
+        if (restart) RequestRestart();
     }
 }
 

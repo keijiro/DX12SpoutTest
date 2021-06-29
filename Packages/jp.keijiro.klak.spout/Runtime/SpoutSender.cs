@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 
 namespace Klak.Spout {
 
-//[ExecuteInEditMode]
+[ExecuteInEditMode]
 [AddComponentMenu("Klak/Spout/Spout Sender")]
 public sealed partial class SpoutSender : MonoBehaviour
 {
@@ -19,14 +19,13 @@ public sealed partial class SpoutSender : MonoBehaviour
 
     #endregion
 
-    Camera _attachedCamera;
-
     #region Buffer texture object
 
     RenderTexture _buffer;
 
     void PrepareBuffer(int width, int height)
     {
+        // If the buffer exists but has wrong dimensions, destroy it first.
         if (_buffer != null &&
             (_buffer.width != width || _buffer.height != height))
         {
@@ -34,11 +33,47 @@ public sealed partial class SpoutSender : MonoBehaviour
             _buffer = null;
         }
 
-        if (_buffer == null)
+        // Create a buffer if it hasn't been allocated yet.
+        if (_buffer == null && width > 0 && height > 0)
         {
             _buffer = new RenderTexture(width, height, 0);
             _buffer.hideFlags = HideFlags.DontSave;
             _buffer.Create();
+        }
+    }
+
+    #endregion
+
+    #region Camera capture (SRP)
+
+    Camera _attachedCamera;
+
+    void OnCameraCapture(RenderTargetIdentifier source, CommandBuffer cb)
+    {
+        if (_attachedCamera == null) return;
+        Blitter.Blit(cb, source, _buffer);
+    }
+
+    void PrepareCameraCapture(Camera target)
+    {
+        // If it has been attached to another camera, detach it first.
+        if (_attachedCamera != null && _attachedCamera != target)
+        {
+            #if KLAK_SPOUT_HAS_SRP
+            CameraCaptureBridge
+              .RemoveCaptureAction(_attachedCamera, OnCameraCapture);
+            #endif
+            _attachedCamera = null;
+        }
+
+        // Attach to the target if it hasn't been attached yet.
+        if (_attachedCamera == null && target != null)
+        {
+            #if KLAK_SPOUT_HAS_SRP
+            CameraCaptureBridge
+              .AddCaptureAction(target, OnCameraCapture);
+            #endif
+            _attachedCamera = target;
         }
     }
 
@@ -51,24 +86,13 @@ public sealed partial class SpoutSender : MonoBehaviour
 
     void OnDestroy()
     {
-        Utility.Destroy(_buffer);
-        _buffer = null;
-    }
-
-    void OnCameraCapture(RenderTargetIdentifier source, CommandBuffer cb)
-    {
-        if (_attachedCamera == null) return;
-        Blitter.Blit(cb, source, _buffer);
+        PrepareBuffer(0, 0);
+        PrepareCameraCapture(null);
     }
 
     void Update()
     {
-        if (_captureMethod == CaptureMethod.Texture)
-        {
-            PrepareBuffer(_sourceTexture.width, _sourceTexture.height);
-            Blitter.Blit(_sourceTexture, _buffer);
-        }
-
+        // GameView capture mode
         if (_captureMethod == CaptureMethod.GameView)
         {
             PrepareBuffer(Screen.width, Screen.height);
@@ -78,18 +102,21 @@ public sealed partial class SpoutSender : MonoBehaviour
             RenderTexture.ReleaseTemporary(temp);
         }
 
-        if (_captureMethod == CaptureMethod.Camera)
+        // Texture capture mode
+        if (_captureMethod == CaptureMethod.Texture)
         {
-            if (_sourceCamera != null && _attachedCamera == null)
-            {
-                _attachedCamera = _sourceCamera;
-                PrepareBuffer(_sourceCamera.pixelWidth, _sourceCamera.pixelHeight);
-                #if KLAK_SPOUT_HAS_SRP
-                CameraCaptureBridge.AddCaptureAction(_attachedCamera, OnCameraCapture);
-                #endif
-            }
+            if (_sourceTexture == null) return;
+            PrepareBuffer(_sourceTexture.width, _sourceTexture.height);
+            Blitter.Blit(_sourceTexture, _buffer);
         }
 
+        // Camera capture mode
+        if (_captureMethod == CaptureMethod.Camera)
+        {
+            PrepareCameraCapture(_sourceCamera);
+            if (_sourceCamera == null) return;
+            PrepareBuffer(_sourceCamera.pixelWidth, _sourceCamera.pixelHeight);
+        }
 
         // Sender lazy initialization
         if (_sender == null) _sender = new Sender(_spoutName, _buffer);

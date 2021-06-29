@@ -39,6 +39,7 @@ public sealed partial class SpoutReceiver : MonoBehaviour
         {
             _buffer = new RenderTexture(src.width, src.height, 0);
             _buffer.hideFlags = HideFlags.DontSave;
+            _buffer.Create();
         }
 
         return _buffer;
