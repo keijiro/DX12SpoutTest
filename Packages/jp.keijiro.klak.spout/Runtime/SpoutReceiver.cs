@@ -6,9 +6,15 @@ namespace Klak.Spout {
 [AddComponentMenu("Klak/Spout/Spout Receiver")]
 public sealed partial class SpoutReceiver : MonoBehaviour
 {
-    #region Private objects
+    #region Receiver plugin object
 
     Receiver _receiver;
+
+    void ReleaseReceiver()
+    {
+        _receiver?.Dispose();
+        _receiver = null;
+    }
 
     #endregion
 
@@ -40,26 +46,10 @@ public sealed partial class SpoutReceiver : MonoBehaviour
 
     #endregion
 
-    #region Private method
-
-    void ChangeSourceName(string name)
-    {
-        // Receiver refresh on source changes
-        if (_sourceName == name) return;
-        _sourceName = name;
-        _receiver?.Dispose();
-        _receiver = null;
-    }
-
-    #endregion
-
     #region MonoBehaviour implementation
 
     void OnDisable()
-    {
-        _receiver?.Dispose();
-        _receiver = null;
-    }
+      => ReleaseReceiver();
 
     void OnDestroy()
     {

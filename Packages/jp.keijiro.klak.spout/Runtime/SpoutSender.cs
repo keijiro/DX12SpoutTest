@@ -5,34 +5,36 @@ namespace Klak.Spout {
 
 //[ExecuteInEditMode]
 [AddComponentMenu("Klak/Spout/Spout Sender")]
-public sealed class SpoutSender : MonoBehaviour
+public sealed partial class SpoutSender : MonoBehaviour
 {
-    [SerializeField] string _name = "DX12 Test";
-    [SerializeField] Texture _source = null;
+    #region Sender plugin object
 
-    IntPtr _instance;
-    EventKicker _event;
+    Sender _sender;
 
-    void Start()
+    void ReleaseSender()
     {
-        _instance = Plugin.CreateSender(_name, _source.width, _source.height);
-
-        _event = new EventKicker
-          (new EventData(_instance, _source.GetNativeTexturePtr()));
-
-        _event.IssuePluginEvent(EventID.UpdateSender);
+        _sender?.Dispose();
+        _sender = null;
     }
 
-    void OnDestroy()
-    {
-        _event.IssuePluginEvent(EventID.CloseSender);
-        _event.Dispose();
-    }
+    #endregion
+
+    #region MonoBehaviour implementation
+
+    void OnDisable()
+      => ReleaseSender();
 
     void Update()
     {
-        _event.IssuePluginEvent(EventID.UpdateSender);
+        // Sender lazy initialization
+        if (_sender == null)
+            _sender = new Sender(_sourceName, _sourceTexture);
+
+        // Sender plugin-side update
+        _sender.Update();
     }
+
+    #endregion
 }
 
 } // namespace Klak.Spout

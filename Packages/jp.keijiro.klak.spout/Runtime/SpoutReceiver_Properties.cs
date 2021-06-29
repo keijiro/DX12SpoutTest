@@ -12,6 +12,14 @@ partial class SpoutReceiver
       { get => _sourceName;
         set => ChangeSourceName(value); }
 
+    void ChangeSourceName(string name)
+    {
+        // Receiver refresh on source changes
+        if (_sourceName == name) return;
+        _sourceName = name;
+        ReleaseReceiver();
+    }
+
     #endregion
 
     #region Destination settings
