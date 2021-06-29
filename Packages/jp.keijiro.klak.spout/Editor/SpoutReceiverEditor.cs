@@ -51,8 +51,9 @@ sealed class SpoutReceiverEditor : UnityEditor.Editor
     // Receiver restart request
     void RequestRestart()
     {
-        // Dirty hack: We can restart receivers by modifying the sourceName
-        // property, so we modify it by an invalid name, then revert it.
+        // Dirty trick: We only can restart receivers by modifying the
+        // sourceName property, so we modify it by an invalid name, then
+        // revert it.
         foreach (SpoutReceiver recv in targets)
         {
             recv.sourceName = "";

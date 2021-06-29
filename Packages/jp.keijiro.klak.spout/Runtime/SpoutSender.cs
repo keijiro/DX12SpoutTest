@@ -69,7 +69,7 @@ public sealed partial class SpoutSender : MonoBehaviour
         }
 
         // Sender lazy initialization
-        if (_sender == null) _sender = new Sender(_sourceName, _buffer);
+        if (_sender == null) _sender = new Sender(_spoutName, _buffer);
 
         // Sender plugin-side update
         _sender.Update();

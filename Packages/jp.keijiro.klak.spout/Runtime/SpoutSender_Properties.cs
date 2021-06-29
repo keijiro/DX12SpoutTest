@@ -8,11 +8,11 @@ partial class SpoutSender
 {
     #region Spout source
 
-    [SerializeField] string _sourceName = "Spout Sender";
+    [SerializeField] string _spoutName = "Spout Sender";
 
-    public string sourceName
-      { get => _sourceName;
-        set => ChangeSourceName(value); }
+    public string spoutName
+      { get => _spoutName;
+        set => ChangeSpoutName(value); }
 
     #endregion
 
@@ -48,7 +48,7 @@ partial class SpoutSender
 
     #endregion
 
-    void ChangeSourceName(string name) {}
+    void ChangeSpoutName(string name) {}
     void ChangeCaptureMethod(CaptureMethod method) {}
     void ChangeSourceCamera(Camera camera) {}
 }
