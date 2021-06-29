@@ -235,8 +235,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _spoutName: Spout Sender
   _enableAlpha: 0
-  _captureMethod: 0
-  _sourceCamera: {fileID: 0}
+  _captureMethod: 1
+  _sourceCamera: {fileID: 1548783096}
   _sourceTexture: {fileID: 0}
 --- !u!4 &918813314
 Transform:

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Klak.Spout {
 
@@ -18,6 +19,8 @@ public sealed partial class SpoutSender : MonoBehaviour
 
     #endregion
 
+    Camera _attachedCamera;
+
     #region Buffer texture object
 
     RenderTexture _buffer;
@@ -35,6 +38,7 @@ public sealed partial class SpoutSender : MonoBehaviour
         {
             _buffer = new RenderTexture(width, height, 0);
             _buffer.hideFlags = HideFlags.DontSave;
+            _buffer.Create();
         }
     }
 
@@ -49,6 +53,12 @@ public sealed partial class SpoutSender : MonoBehaviour
     {
         Utility.Destroy(_buffer);
         _buffer = null;
+    }
+
+    void OnCameraCapture(RenderTargetIdentifier source, CommandBuffer cb)
+    {
+        if (_attachedCamera == null) return;
+        Blitter.Blit(cb, source, _buffer);
     }
 
     void Update()
@@ -67,6 +77,19 @@ public sealed partial class SpoutSender : MonoBehaviour
             Graphics.Blit(temp, _buffer);
             RenderTexture.ReleaseTemporary(temp);
         }
+
+        if (_captureMethod == CaptureMethod.Camera)
+        {
+            if (_sourceCamera != null && _attachedCamera == null)
+            {
+                _attachedCamera = _sourceCamera;
+                PrepareBuffer(_sourceCamera.pixelWidth, _sourceCamera.pixelHeight);
+                #if KLAK_SPOUT_HAS_SRP
+                CameraCaptureBridge.AddCaptureAction(_attachedCamera, OnCameraCapture);
+                #endif
+            }
+        }
+
 
         // Sender lazy initialization
         if (_sender == null) _sender = new Sender(_spoutName, _buffer);
