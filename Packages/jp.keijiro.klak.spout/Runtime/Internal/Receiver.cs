@@ -27,6 +27,8 @@ sealed class Receiver : System.IDisposable
 
     public Receiver(string sourceName)
     {
+        if (string.IsNullOrEmpty(sourceName)) return;
+
         // Plugin object allocation
         _plugin = Plugin.CreateReceiver(sourceName);
 
@@ -65,6 +67,8 @@ sealed class Receiver : System.IDisposable
 
     public void Update()
     {
+        if (_plugin == System.IntPtr.Zero) return;
+
         // Lazy initialization: We try creating a receiver texture every frame
         // until getting a correct one.
         if (_texture == null)
