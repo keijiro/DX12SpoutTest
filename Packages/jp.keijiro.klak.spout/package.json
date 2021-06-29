@@ -1,5 +1,6 @@
 {
   "author": "Keijiro Takahashi",
+  "dependencies": { "com.unity.modules.screencapture": "1.0.0" },
   "description": "Cross-process texture sharing plugin (Spout protocol)",
   "displayName": "KlakSpout",
   "keywords": [ "unity" ],
