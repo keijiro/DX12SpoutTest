@@ -20,21 +20,34 @@ public sealed partial class SpoutReceiver : MonoBehaviour
 
     #region Buffer texture object
 
-    RenderTexture Buffer => PrepareBufferTexture();
-
     RenderTexture _buffer;
 
-    RenderTexture PrepareBufferTexture()
+    RenderTexture PrepareBuffer()
     {
-        var src = _receiver.Texture;
-        if (src == null) return null;
+        // Receive-to-Texture mode:
+        // Destroy the internal buffer (if it exists) and return the target
+        // texture.
+        if (_targetTexture != null)
+        {
+            if (_buffer != null)
+            {
+                Utility.Destroy(_buffer);
+                _buffer = null;
+            }
+            return _targetTexture;
+        }
 
-        if (_buffer != null && !Utility.CompareSpecs(_buffer, src))
+        var src = _receiver.Texture;
+
+        // If the buffer exists but has wrong dimensions, destroy it first.
+        if (_buffer != null &&
+            (_buffer.width != src.width || _buffer.height != src.height))
         {
             Utility.Destroy(_buffer);
             _buffer = null;
         }
 
+        // Create a buffer if it hasn't been allocated yet.
         if (_buffer == null)
         {
             _buffer = new RenderTexture(src.width, src.height, 0);
@@ -71,12 +84,13 @@ public sealed partial class SpoutReceiver : MonoBehaviour
         if (_receiver.Texture == null) return;
 
         // Received texture buffering
-        Blitter.Blit(_receiver.Texture, receivedTexture);
+        var buffer = PrepareBuffer();
+        Blitter.Blit(_receiver.Texture, buffer);
 
         // Renderer override
         if (_targetRenderer != null)
             RendererOverride.SetTexture
-              (_targetRenderer, _targetMaterialProperty, receivedTexture);
+              (_targetRenderer, _targetMaterialProperty, buffer);
     }
 
     #endregion

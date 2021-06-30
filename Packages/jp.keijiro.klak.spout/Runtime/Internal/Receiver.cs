@@ -69,16 +69,24 @@ sealed class Receiver : System.IDisposable
     {
         if (_plugin == System.IntPtr.Zero) return;
 
-        // Lazy initialization: We try creating a receiver texture every frame
-        // until getting a correct one.
-        if (_texture == null)
+        var data = Plugin.GetReceiverData(_plugin);
+
+        // Texture refresh:
+        // If we are referring to an old texture pointer, destroy it first.
+        if (_texture != null &&
+            _texture.GetNativeTexturePtr() != data.texturePointer)
         {
-            var data = Plugin.GetReceiverData(_plugin);
-            if (data.texturePointer != IntPtr.Zero)
-                _texture = Texture2D.CreateExternalTexture
-                  ((int)data.width, (int)data.height, TextureFormat.RGBA32,
-                   false, false, data.texturePointer);
+            Utility.Destroy(_texture);
+            _texture = null;
         }
+
+        // Lazy initialization:
+        // We try creating a receiver texture every frame until getting a
+        // correct one.
+        if (_texture == null && data.texturePointer != IntPtr.Zero)
+            _texture = Texture2D.CreateExternalTexture
+              ((int)data.width, (int)data.height, TextureFormat.RGBA32,
+               false, false, data.texturePointer);
 
         // Update event for the render thread
         _event.IssuePluginEvent(EventID.UpdateReceiver);

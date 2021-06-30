@@ -25,14 +25,16 @@ public:
 
     void update()
     {
-        if (_texture) return;
-
         // Search the Spout name list.
+        unsigned int width, height;
         HANDLE handle;
         DWORD format;
         auto res = _system->spout
-          .CheckSender(_name.c_str(), _width, _height, handle, format);
+          .CheckSender(_name.c_str(), width, height, handle, format);
         if (!res) return;
+
+        // Do nothing further if the current texture is valid.
+        if (_texture && _width == width && _height == height) return;
 
         if (_system->isD3D12)
         {
@@ -65,6 +67,8 @@ public:
                 std::puts("Receiver created");
         }
 
+        _width = width;
+        _height = height;
     }
 
     InteropData getInteropData() const

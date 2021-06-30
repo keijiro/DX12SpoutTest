@@ -53,9 +53,6 @@ static class Blitter
 
 static class Utility
 {
-    public static bool CompareSpecs(Texture a, Texture b)
-      => a.width == b.width && a.height == b.height;
-
     public static void Destroy(Object obj)
     {
         if (obj == null) return;

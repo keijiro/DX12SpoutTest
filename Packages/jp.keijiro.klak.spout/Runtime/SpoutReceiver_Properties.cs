@@ -47,7 +47,7 @@ partial class SpoutReceiver
     #region Runtime property
 
     public RenderTexture receivedTexture
-      => _targetTexture != null ? _targetTexture : Buffer;
+      => _buffer != null ? _buffer : _targetTexture;
 
     #endregion
 }
