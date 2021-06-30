@@ -3,6 +3,9 @@ using UnityEngine.Rendering;
 
 namespace Klak.Spout {
 
+//
+// Spout sender class (main implementation)
+//
 [ExecuteInEditMode]
 [AddComponentMenu("Klak/Spout/Spout Sender")]
 public sealed partial class SpoutSender : MonoBehaviour

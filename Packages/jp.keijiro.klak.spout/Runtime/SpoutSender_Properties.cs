@@ -2,8 +2,12 @@ using UnityEngine;
 
 namespace Klak.Spout {
 
+// Sender capture methods
 public enum CaptureMethod { GameView, Camera, Texture }
 
+//
+// Spout sender class (properties)
+//
 partial class SpoutSender
 {
     #region Spout source

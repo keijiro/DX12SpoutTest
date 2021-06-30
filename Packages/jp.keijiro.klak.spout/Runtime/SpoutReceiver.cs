@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace Klak.Spout {
 
+//
+// Spout receiver class (main implementation)
+//
 [ExecuteInEditMode]
 [AddComponentMenu("Klak/Spout/Spout Receiver")]
 public sealed partial class SpoutReceiver : MonoBehaviour
@@ -25,8 +28,7 @@ public sealed partial class SpoutReceiver : MonoBehaviour
     RenderTexture PrepareBuffer()
     {
         // Receive-to-Texture mode:
-        // Destroy the internal buffer (if it exists) and return the target
-        // texture.
+        // Destroy the internal buffer and return the target texture.
         if (_targetTexture != null)
         {
             if (_buffer != null)

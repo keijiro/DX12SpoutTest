@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace Klak.Spout {
 
+//
+// Spout receiver class (properties)
+//
 partial class SpoutReceiver
 {
     #region Spout source
