@@ -32,11 +32,13 @@ Shader "Hidden/Klak/Spout/Blit"
         return float4(tex2D(_MainTex, texCoord).rgb, 1);
     }
 
-    float4 BlitToLinear(float4 position : SV_Position,
+    float4 BlitFromSrgb(float4 position : SV_Position,
                         float2 texCoord : TEXCOORD0) : SV_Target
     {
         float4 c = tex2D(_MainTex, texCoord);
+        #ifndef UNITY_COLORSPACE_GAMMA
         c.rgb = GammaToLinearSpace(c.rgb);
+        #endif
         return c;
     }
 
@@ -63,7 +65,8 @@ Shader "Hidden/Klak/Spout/Blit"
         {
             CGPROGRAM
             #pragma vertex Vertex
-            #pragma fragment BlitToLinear
+            #pragma fragment BlitFromSrgb
+            #pragma multi_compile _ UNITY_COLORSPACE_GAMMA
             ENDCG
         }
     }

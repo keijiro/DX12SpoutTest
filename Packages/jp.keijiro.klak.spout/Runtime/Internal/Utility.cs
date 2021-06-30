@@ -32,11 +32,8 @@ static class Blitter
     public static void BlitClearAlpha(CommandBuffer cb, RTID src, RTID dst)
       => cb.Blit(src, dst, GetMaterial(), 1);
 
-    public static void BlitToLinear(Texture src, RenderTexture dst)
+    public static void BlitFromSrgb(Texture src, RenderTexture dst)
       => Graphics.Blit(src, dst, GetMaterial(), 2);
-
-    public static void BlitToLinear(CommandBuffer cb, RTID src, RTID dst)
-      => cb.Blit(src, dst, GetMaterial(), 2);
 
     static Material _material;
 
