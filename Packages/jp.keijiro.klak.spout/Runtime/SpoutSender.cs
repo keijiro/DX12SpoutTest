@@ -29,6 +29,7 @@ public sealed partial class SpoutSender : MonoBehaviour
         if (_buffer != null &&
             (_buffer.width != width || _buffer.height != height))
         {
+            ReleaseSender();
             Utility.Destroy(_buffer);
             _buffer = null;
         }
@@ -82,10 +83,8 @@ public sealed partial class SpoutSender : MonoBehaviour
     #region MonoBehaviour implementation
 
     void OnDisable()
-      => ReleaseSender();
-
-    void OnDestroy()
     {
+        ReleaseSender();
         PrepareBuffer(0, 0);
         PrepareCameraCapture(null);
     }
