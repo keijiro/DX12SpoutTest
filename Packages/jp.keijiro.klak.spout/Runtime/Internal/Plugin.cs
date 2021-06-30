@@ -5,6 +5,8 @@ namespace Klak.Spout {
 
 static class Plugin
 {
+    // Receiver interop data structure
+    // Should match with KlakSpout::Receiver::InteropData (Receiver.h)
     [StructLayout(LayoutKind.Sequential)]
     public struct ReceiverData
     {

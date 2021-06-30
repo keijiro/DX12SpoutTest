@@ -5,15 +5,10 @@
 
 namespace KlakSpout {
 
+// DX11/12 compatible Spout receiver class
 class Receiver final
 {
 public:
-
-    struct InteropData
-    {
-        unsigned int width, height;
-        void* texture_pointer;
-    };
 
     Receiver(const char* name)
       : _name(name) {}
@@ -36,40 +31,38 @@ public:
         // Do nothing further if the current texture is valid.
         if (_texture && _width == width && _height == height) return;
 
+        HRESULT hres;
+
         if (_system->isD3D12)
         {
             // Handle -> D3D12Resource
             WRL::ComPtr<ID3D12Resource> resource;
-
-            auto hres = _system->getD3D12Device()
+            hres = _system->getD3D12Device()
               ->OpenSharedHandle(handle, IID_PPV_ARGS(&resource));
-
             _texture = resource;
-
-            if (FAILED(hres))
-                std::printf("OpenSharedHandle failed (%x)\n", hres);
-            else
-                std::puts("Receiver created");
         }
         else
         {
             // Handle -> D3D11Resource
             WRL::ComPtr<ID3D11Resource> resource;
-
-            auto hres = _system->getD3D11Device()
+            hres = _system->getD3D11Device()
               ->OpenSharedResource(handle, IID_PPV_ARGS(&resource));
-
             _texture = resource;
-
-            if (FAILED(hres))
-                std::printf("OpenSharedHandle failed (%x)\n", hres);
-            else
-                std::puts("Receiver created");
         }
 
         _width = width;
         _height = height;
+
+        if (FAILED(hres)) LogError("OpenSharedResource", _name, hres);
     }
+
+    // Receiver interop data structure
+    // Should match with Klak.Spout.Plugin.ReceiverData (Plugin.cs)
+    struct InteropData
+    {
+        unsigned int width, height;
+        void* texture_pointer;
+    };
 
     InteropData getInteropData() const
     {

@@ -12,6 +12,12 @@
 
 namespace KlakSpout {
 
-namespace WRL = Microsoft::WRL;
+namespace WRL = Microsoft::WRL; // for ComPtr
+
+static inline void LogError
+  (const char* label, const std::string& name, unsigned int code)
+{
+    std::printf("KlakSpout error: %s (%s) - %x\n", label, name.c_str(), code);
+}
 
 } // namespace KlakSpout

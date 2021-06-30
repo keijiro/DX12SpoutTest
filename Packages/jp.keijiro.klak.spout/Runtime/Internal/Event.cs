@@ -5,6 +5,8 @@ using System;
 
 namespace Klak.Spout {
 
+// Render event IDs
+// Should match with KlakSpout::EventID (Event.h)
 enum EventID
 {
     UpdateSender,
@@ -13,6 +15,8 @@ enum EventID
     CloseReceiver
 }
 
+// Render event attachment data structure
+// Should match with KlakSpout::EventData (Event.h)
 [StructLayout(LayoutKind.Sequential)]
 struct EventData
 {

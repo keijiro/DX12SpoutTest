@@ -9,18 +9,14 @@ using namespace KlakSpout;
 
 namespace {
 
-//
 // Graphics device event callback
-//
 void UNITY_INTERFACE_API
   OnGraphicsDeviceEvent(UnityGfxDeviceEventType event_type)
 {
     if (event_type == kUnityGfxDeviceEventShutdown) _system->shutdown();
 }
 
-//
 // Render event (via IssuePluginEvent) callback
-//
 void UNITY_INTERFACE_API
   OnRenderEvent(int event_id, void* event_data)
 {
@@ -33,18 +29,11 @@ void UNITY_INTERFACE_API
 
 } // anonymous namespace
 
-//
 // Unity low-level native plugin interface
-//
 
 extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API
   UnityPluginLoad(IUnityInterfaces* interfaces)
 {
-    // Open a new console for stdout.
-    //FILE * pConsole;
-    //AllocConsole();
-    //freopen_s(&pConsole, "CONOUT$", "wb", stdout);
-
     // System object instantiation, callback registration
     _system = std::make_unique<System>(interfaces);
     _system->getGraphics()->RegisterDeviceEventCallback(OnGraphicsDeviceEvent);
@@ -57,9 +46,7 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginUnload()
     _system.reset();
 }
 
-//
 // Plugin functions
-//
 
 extern "C" UnityRenderingEventAndData UNITY_INTERFACE_EXPORT
   GetRenderEventCallback()

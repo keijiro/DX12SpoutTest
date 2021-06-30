@@ -5,6 +5,7 @@
 
 namespace KlakSpout {
 
+// DX11/12 compatible Spout sender class
 class Sender final
 {
 public:
@@ -23,18 +24,21 @@ public:
 
     void update(IUnknown* source)
     {
+        // Lazy initialization
         if (!_texture) initialize();
 
         WRL::ComPtr<IUnknown> unknown(source);
 
         if (_system->isD3D12)
         {
+            // DX12: Texture update
             WRL::ComPtr<ID3D12Resource> d3d12;
             unknown.As(&d3d12);
             updateTexture(d3d12.Get());
         }
         else
         {
+            // DX11: Texture update
             WRL::ComPtr<ID3D11Resource> d3d11;
             unknown.As(&d3d11);
             updateTexture(d3d11.Get());
@@ -66,7 +70,7 @@ private:
 
         if (FAILED(hres))
         {
-            std::printf("CreateTexture2D failed (%x)\n", hres);
+            LogError("CereateTexture2D", _name, hres);
             return;
         }
 
@@ -80,7 +84,7 @@ private:
         auto res = _system->spout
           .CreateSender(_name.c_str(), _width, _height, handle, desc.Format);
 
-        std::puts(res ? "Sender activated" : "CreateSender failed");
+        if (!res) LogError("CreateSender", _name, 0);
     }
 
     void updateTexture(ID3D11Resource* source)
@@ -96,15 +100,15 @@ private:
         // Wrapping: D3D12 -> D3D11
         D3D11_RESOURCE_FLAGS flags = {};
         WRL::ComPtr<ID3D11Resource> wrap;
-        auto res = d3d11on12->CreateWrappedResource
+        auto hres = d3d11on12->CreateWrappedResource
           (source, &flags,
            D3D12_RESOURCE_STATE_COPY_SOURCE,
            D3D12_RESOURCE_STATE_PRESENT,
            IID_PPV_ARGS(&wrap));
 
-        if (FAILED(res))
+        if (FAILED(hres))
         {
-            std::printf("CreateWrappedResource failed (%x)\n", res);
+            LogError("CereateWrappedResource", _name, hres);
             return;
         }
 

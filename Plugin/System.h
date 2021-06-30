@@ -4,6 +4,7 @@
 
 namespace KlakSpout {
 
+// Singleton system class that manages DX11/12 device/context objects
 class System final
 {
 public:
@@ -94,6 +95,7 @@ public:
     }
 };
 
+// Singleton instance
 inline std::unique_ptr<System> _system;
 
 } // namespace KlakSpout
