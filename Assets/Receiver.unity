@@ -251,6 +251,7 @@ MonoBehaviour:
   _targetTexture: {fileID: 0}
   _targetRenderer: {fileID: 382375178}
   _targetMaterialProperty: _MainTex
+  _resources: {fileID: 11400000, guid: f449ebbe2051c2e4d993eaa773a410de, type: 2}
 --- !u!1 &1548783094
 GameObject:
   m_ObjectHideFlags: 0

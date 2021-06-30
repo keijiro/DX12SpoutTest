@@ -52,7 +52,7 @@ public sealed partial class SpoutSender : MonoBehaviour
     void OnCameraCapture(RenderTargetIdentifier source, CommandBuffer cb)
     {
         if (_attachedCamera == null) return;
-        Blitter.Blit(cb, source, _buffer, _keepAlpha);
+        Blitter.Blit(_resources, cb, source, _buffer, _keepAlpha);
     }
 
     void PrepareCameraCapture(Camera target)
@@ -97,7 +97,7 @@ public sealed partial class SpoutSender : MonoBehaviour
             PrepareBuffer(Screen.width, Screen.height);
             var temp = RenderTexture.GetTemporary(Screen.width, Screen.height, 0);
             ScreenCapture.CaptureScreenshotIntoRenderTexture(temp);
-            Blitter.BlitVFlip(temp, _buffer, _keepAlpha);
+            Blitter.BlitVFlip(_resources, temp, _buffer, _keepAlpha);
             RenderTexture.ReleaseTemporary(temp);
         }
 
@@ -106,7 +106,7 @@ public sealed partial class SpoutSender : MonoBehaviour
         {
             if (_sourceTexture == null) return;
             PrepareBuffer(_sourceTexture.width, _sourceTexture.height);
-            Blitter.Blit(_sourceTexture, _buffer, _keepAlpha);
+            Blitter.Blit(_resources, _sourceTexture, _buffer, _keepAlpha);
         }
 
         // Camera capture mode

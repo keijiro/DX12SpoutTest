@@ -1,12 +1,10 @@
 fileFormatVersion: 2
-guid: 62f7dec0b00674947bc631624c21970a
+guid: 12527eb854f97c84cac3b04dc699db09
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - _targetTexture: {instanceID: 0}
-  - _targetRenderer: {instanceID: 0}
-  - _resources: {fileID: 11400000, guid: f449ebbe2051c2e4d993eaa773a410de, type: 2}
+  - blitShader: {fileID: 4800000, guid: eb56c59e60b76874692c486f3bdd860d, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

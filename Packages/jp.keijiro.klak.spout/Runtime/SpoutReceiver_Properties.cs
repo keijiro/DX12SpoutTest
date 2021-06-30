@@ -50,6 +50,15 @@ partial class SpoutReceiver
       => _buffer != null ? _buffer : _targetTexture;
 
     #endregion
+
+    #region Resource asset reference
+
+    [SerializeField, HideInInspector] SpoutResources _resources = null;
+
+    public void SetResources(SpoutResources resources)
+      => _resources = resources;
+
+    #endregion
 }
 
 } // namespace Klak.Spout
