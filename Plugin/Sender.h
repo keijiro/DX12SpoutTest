@@ -14,7 +14,11 @@ public:
 
     ~Sender()
     {
-        _texture = nullptr;
+        if (_texture)
+        {
+            _system->spout.ReleaseSenderName(_name.c_str());
+            _texture = nullptr;
+        }
     }
 
     void update(IUnknown* source)
