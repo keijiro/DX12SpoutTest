@@ -11,6 +11,9 @@ Shader "Hidden/Klak/Spout/Blit"
 
     sampler2D _MainTex;
 
+    // Note: The effect of the v-flip option is reversed here.
+    // We have to do v-flip actually on no-v-flip passes.
+
     void Vertex(float4 position : POSITION,
                 float2 texCoord : TEXCOORD0,
                 out float4 outPosition : SV_Position,
@@ -18,6 +21,15 @@ Shader "Hidden/Klak/Spout/Blit"
     {
         outPosition = UnityObjectToClipPos(position);
         outTexCoord = float2(texCoord.x, 1 - texCoord.y);
+    }
+
+    void VertexVFlip(float4 position : POSITION,
+                     float2 texCoord : TEXCOORD0,
+                     out float4 outPosition : SV_Position,
+                     out float2 outTexCoord : TEXCOORD0)
+    {
+        outPosition = UnityObjectToClipPos(position);
+        outTexCoord = texCoord;
     }
 
     float4 BlitSimple(float4 position : SV_Position,
@@ -58,6 +70,20 @@ Shader "Hidden/Klak/Spout/Blit"
         {
             CGPROGRAM
             #pragma vertex Vertex
+            #pragma fragment BlitClearAlpha
+            ENDCG
+        }
+        Pass
+        {
+            CGPROGRAM
+            #pragma vertex VertexVFlip
+            #pragma fragment BlitSimple
+            ENDCG
+        }
+        Pass
+        {
+            CGPROGRAM
+            #pragma vertex VertexVFlip
             #pragma fragment BlitClearAlpha
             ENDCG
         }

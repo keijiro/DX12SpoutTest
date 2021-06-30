@@ -26,11 +26,11 @@ partial class SpoutSender
 
     #region Format option
 
-    [SerializeField] bool _enableAlpha = false;
+    [SerializeField] bool _keepAlpha = false;
 
-    public bool enableAlpha
-      { get => _enableAlpha;
-        set => _enableAlpha = value; }
+    public bool keepAlpha
+      { get => _keepAlpha;
+        set => _keepAlpha = value; }
 
     #endregion
 

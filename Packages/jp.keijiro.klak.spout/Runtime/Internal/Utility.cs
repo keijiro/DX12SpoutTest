@@ -20,20 +20,17 @@ static class RendererOverride
 
 static class Blitter
 {
-    public static void Blit(Texture src, RenderTexture dst)
-      => Graphics.Blit(src, dst, GetMaterial(), 0);
+    public static void Blit(Texture src, RenderTexture dst, bool alpha)
+      => Graphics.Blit(src, dst, GetMaterial(), alpha ? 0 : 1);
 
-    public static void Blit(CommandBuffer cb, RTID src, RTID dst)
-      => cb.Blit(src, dst, GetMaterial(), 0);
+    public static void BlitVFlip(Texture src, RenderTexture dst, bool alpha)
+      => Graphics.Blit(src, dst, GetMaterial(), alpha ? 2 : 3);
 
-    public static void BlitClearAlpha(Texture src, RenderTexture dst)
-      => Graphics.Blit(src, dst, GetMaterial(), 1);
-
-    public static void BlitClearAlpha(CommandBuffer cb, RTID src, RTID dst)
-      => cb.Blit(src, dst, GetMaterial(), 1);
+    public static void Blit(CommandBuffer cb, RTID src, RTID dst, bool alpha)
+      => cb.Blit(src, dst, GetMaterial(), alpha ? 0 : 1);
 
     public static void BlitFromSrgb(Texture src, RenderTexture dst)
-      => Graphics.Blit(src, dst, GetMaterial(), 2);
+      => Graphics.Blit(src, dst, GetMaterial(), 4);
 
     static Material _material;
 

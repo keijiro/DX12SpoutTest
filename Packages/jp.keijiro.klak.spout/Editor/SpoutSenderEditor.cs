@@ -8,7 +8,7 @@ namespace Klak.Spout.Editor {
 sealed class SpoutSenderEditor : UnityEditor.Editor
 {
     SerializedProperty _spoutName;
-    SerializedProperty _enableAlpha;
+    SerializedProperty _keepAlpha;
     SerializedProperty _captureMethod;
     SerializedProperty _sourceCamera;
     SerializedProperty _sourceTexture;
@@ -35,7 +35,7 @@ sealed class SpoutSenderEditor : UnityEditor.Editor
     {
         var finder = new PropertyFinder(serializedObject);
         _spoutName = finder["_spoutName"];
-        _enableAlpha = finder["_enableAlpha"];
+        _keepAlpha = finder["_keepAlpha"];
         _captureMethod = finder["_captureMethod"];
         _sourceCamera = finder["_sourceCamera"];
         _sourceTexture = finder["_sourceTexture"];
@@ -49,7 +49,7 @@ sealed class SpoutSenderEditor : UnityEditor.Editor
         EditorGUILayout.DelayedTextField(_spoutName, Labels.SpoutName);
         var restart = EditorGUI.EndChangeCheck();
 
-        EditorGUILayout.PropertyField(_enableAlpha);
+        EditorGUILayout.PropertyField(_keepAlpha);
         EditorGUILayout.PropertyField(_captureMethod);
 
         EditorGUI.indentLevel++;
