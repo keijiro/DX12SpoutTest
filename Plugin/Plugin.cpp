@@ -4,10 +4,17 @@
 #include "Sender.h"
 #include "System.h"
 #include "Util.h"
+#include <mutex>
 
 using namespace KlakSpout;
 
 namespace {
+
+// Local mutex object used to prevent race conditions between the main thread
+// and the render thread. This should be locked at the following points:
+// - OnRenderEvent (this is the only point called from the render thread)
+// - Plugin functions that use the Spout API functions.
+std::mutex lock_;
 
 // Graphics device event callback
 void UNITY_INTERFACE_API
@@ -20,6 +27,7 @@ void UNITY_INTERFACE_API
 void UNITY_INTERFACE_API
   OnRenderEvent(int event_id, void* event_data)
 {
+    std::lock_guard<std::mutex> guard(lock_);
     auto data = reinterpret_cast<const EventData*>(event_data);
     if (event_id == event_updateSender  ) data->sender->update(data->texture);
     if (event_id == event_updateReceiver) data->receiver->update();
@@ -75,6 +83,7 @@ extern "C" Receiver::InteropData UNITY_INTERFACE_EXPORT
 extern "C" void UNITY_INTERFACE_EXPORT
   GetSenderNames(char*** names, int* count)
 {
+    std::lock_guard<std::mutex> guard(lock_);
     std::set<std::string> senders;
     _system->spout.GetSenderNames(&senders);
     std::tie(*names, *count) = MarshalStringSet(senders);
